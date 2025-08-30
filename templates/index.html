@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Doctor Chatbot</title>
+<style>
+body { font-family: Arial, sans-serif; display: flex; margin: 0; height: 100vh; }
+#sidebar { width: 250px; background: #eee; padding: 10px; overflow-y: auto; }
+#main { flex: 1; padding: 20px; display: flex; flex-direction: column; }
+#chat { border: 1px solid #ccc; padding: 10px; height: 70vh; overflow-y: scroll; background: #fff; }
+.user { background: #d0e7ff; padding: 8px; margin: 5px 0; border-radius: 5px; }
+.bot { background: #d4ffd4; padding: 8px; margin: 5px 0; border-radius: 5px; }
+.section { margin-left: 10px; margin-bottom: 5px; }
+.conv-btn { display: block; padding: 8px; margin: 5px 0; background: #ccc; cursor: pointer; border-radius: 5px; }
+.conv-btn.active { background: #aaa; }
+#input-container { display: flex; margin-top: 10px; }
+#input-container input[type="text"] { flex: 1; padding: 10px; }
+#input-container button { padding: 10px; margin-left: 5px; }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+<h3>Ai-Doctor-chatbot</h3>
+<div id="conv-list"></div>
+<button onclick="newConversation()">+ New Conversation</button>
+</div>
+
+<div id="main">
+<div id="chat"></div>
+<div id="input-container">
+  <input type="text" id="message" placeholder="Type your symptoms here...">
+  <button onclick="sendMessage()">Send</button>
+</div>
+</div>
+
+<script>
+let conversations = [];
+if (typeof initialConversations !== 'undefined') {
+    conversations = initialConversations;
+}
+
+let currentConv = 0;
+const chat = document.getElementById("chat");
+const convList = document.getElementById("conv-list");
+
+function renderConversations() {
+    convList.innerHTML = "";
+    conversations.forEach((conv, index) => {
+        const btn = document.createElement("div");
+        btn.className = "conv-btn" + (index === currentConv ? " active" : "");
+        btn.innerText = "Conversation " + (index + 1);
+        btn.onclick = () => { currentConv = index; renderChat(); renderConversations(); };
+        convList.appendChild(btn);
+    });
+}
+
+function renderChat() {
+    chat.innerHTML = "";
+    if(conversations[currentConv]){
+        conversations[currentConv].forEach(msg => {
+            if(msg.role === "user"){
+                chat.innerHTML += `<div class="user"><b>You:</b> ${msg.content}</div>`;
+            } else if(msg.role === "assistant"){
+                let html = `<div class="bot"><b>Doctor AI:</b>`;
+                const sections = ["Symptoms","Possible Causes","Recommended Tests","Advice"];
+                sections.forEach(s => {
+                    const regex = new RegExp(s+":\\s*([\\s\\S]*?)(?=(Symptoms|Possible Causes|Recommended Tests|Advice|$))","i");
+                    const match = msg.content.match(regex);
+                    if(match) html += `<div class="section"><b>${s}:</b> ${match[1].trim()}</div>`;
+                });
+                html += `</div>`;
+                chat.innerHTML += html;
+            }
+        });
+    }
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function newConversation(){
+    conversations.push([]);
+    currentConv = conversations.length - 1;
+    renderConversations();
+    renderChat();
+}
+
+async function sendMessage(){
+    const msgBox = document.getElementById("message");
+    const message = msgBox.value;
+    if(!message) return;
+
+    if(!conversations[currentConv]) conversations[currentConv] = [];
+    conversations[currentConv].push({role:"user", content:message});
+    renderChat();
+    msgBox.value = "";
+
+    const response = await fetch("/ask", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({message: message, conv_id: currentConv})
+    });
+    const data = await response.json();
+    conversations[currentConv].push({role:"assistant", content:data.answer});
+    renderChat();
+    renderConversations();
+}
+
+renderConversations();
+renderChat();
+</script>
+
+</body>
+</html>
