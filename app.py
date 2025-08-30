@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, render_template, jsonify, session
 import requests
 import re
@@ -5,7 +6,7 @@ import re
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 MODEL = "gpt-4.1-mini"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
