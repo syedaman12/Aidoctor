@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, render_template, jsonify, session
 import requests
-import python-dotenv
+from dotenv import load_dotenv 
 
 
 from flask_cors import CORS  # Optional if you want to allow cross-origin requests
