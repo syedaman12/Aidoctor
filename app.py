@@ -1,15 +1,19 @@
 import os
 from flask import Flask, request, render_template, jsonify, session
 import requests
+import python-dotenv
+
 
 from flask_cors import CORS  # Optional if you want to allow cross-origin requests
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")  # Use env var for security
 CORS(app)
 
 # Load API key from environment variable
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = os.environ.get("OPENAI_API_KEY")
 MODEL = "gpt-4.1-mini"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
