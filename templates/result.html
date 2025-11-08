@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Symptom Analysis Result</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Symptom Analysis Result</h1>
+      <p class="disclaimer">Educational guidance only. Not a diagnosis. For emergencies, call local emergency services.</p>
+    </header>
+    <main>
+      <section class="result-section">
+        {% if sections %}
+          <div class="result-block">
+            <h2>Summary</h2>
+            <p>{{ sections.summary }}</p>
+          </div>
+          <div class="result-block">
+            <h2>Possible Causes</h2>
+            <p>{{ sections.causes }}</p>
+          </div>
+          <div class="result-block">
+            <h2>Advice</h2>
+            <p>{{ sections.advice }}</p>
+          </div>
+          <div style="margin-top:1em">
+            <a href="/saved" class="btn">View Saved Analyses</a>
+            <a href="/" class="btn">Home</a>
+          </div>
+        {% else %}
+          <p>No analysis found.</p>
+        {% endif %}
+      </section>
+    </main>
+  </div>
+</body>
+</html>
