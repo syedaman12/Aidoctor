@@ -13,7 +13,7 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")  # Use env
 CORS(app)
 
 # Load API key from environment variable
-OPENROUTER_API_KEY = os.environ.get("OPENAI_API_KEY")
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 MODEL = "gpt-4.1-mini"
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
